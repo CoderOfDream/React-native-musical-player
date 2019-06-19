@@ -36,6 +36,8 @@ const pushNamesToArr = () => {
     return arr;
 }
 
+
+
 export let CURRENTTRACK = new PlaylistItem('item.name', 'item.uri', 'item.image');
 
 const PlayList = () => {

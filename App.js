@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import Player from './src/Player'
@@ -13,15 +13,18 @@ export default class App extends Component {
     return (
       <Router>
         <Scene key='root'>
-          <Scene key='playList' component={PlayList} title='PlayList' initial/>
-          <Scene key='player' component={Player} title='Player' />
+          <Scene key='playList' component={PlayList} title='PlayList' initial />
+          <Scene key='player' component={Player} title='Player' back />
         </Scene>
       </Router>
     );
   }
-  
 }
 
+
+updateData = (value) => {
+  this.setState({ name: value })
+}
 
 const styles = StyleSheet.create({
   container: {

@@ -6,12 +6,16 @@ import {
 	Text,
 	TouchableHighlight,
 	View,
+	InteractionManager
 } from 'react-native';
 import Slider from 'react-native-slider';
-import { Asset, Audio, Font } from 'expo';
+import { Asset, Font } from 'expo';
+import {Audio} from 'expo-av';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Actions } from 'react-native-router-flux'
 import { CURRENTTRACK } from './PlayList';
+import { YellowBox } from 'react-native';
+YellowBox.ignoreWarnings(['Remote debugger']);
 
 class PlaylistItem {
 	constructor(name, uri, image) {
@@ -49,22 +53,28 @@ export default class App extends Component {
 			volume: 1.0,
 			rate: 1.0,
 			portrait: null,
+			interactionsComplete: false
 		};
 	}
 
 	componentDidMount() {
+		
 		Audio.setAudioModeAsync({
 			allowsRecordingIOS: false,
 			interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
 			playsInSilentModeIOS: true,
 			shouldDuckAndroid: true,
 			interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+			playThroughEarpieceAndroid: true,
+			staysActiveInBackground: true
 		});
 		(async () => {
 			this.setState({ fontLoaded: true });
 		})();
 
 		this._loadNewPlaybackInstance(false);
+
+		
 	}
 
 	async _loadNewPlaybackInstance(playing) {
@@ -81,7 +91,7 @@ export default class App extends Component {
 			volume: this.state.volume,
 		};
 
-		const { sound, status } = await Audio.Sound.create(
+		const { sound, status } = await Audio.Sound.createAsync(
 			source,
 			initialStatus,
 			this._onPlaybackStatusUpdate
@@ -412,7 +422,7 @@ export default class App extends Component {
 						style={[
 							styles.buttonsContainerBase,
 							styles.buttonsContainerBottomRow,
-							{marginBottom: 100}
+							{ marginBottom: 100 }
 						]}
 					>
 						<View>
