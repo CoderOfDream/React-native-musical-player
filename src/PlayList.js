@@ -4,52 +4,55 @@ import { Actions } from 'react-native-router-flux'
 import { Router, Scene } from 'react-native-router-flux'
 
 class PlaylistItem {
-    constructor(name, uri, image) {
+    constructor(name, uri, image, id) {
         this.name = name;
         this.uri = uri;
         this.image = image;
+        this.id = id;
     }
 
 }
 
-const TRACKS = [
+export const TRACKS = [
     new PlaylistItem(
         'Comfort Fit - “Sorry”',
         'https://s3.amazonaws.com/exp-us-standard/audio/playlist-example/Comfort_Fit_-_03_-_Sorry.mp3',
-        'https://facebook.github.io/react/img/logo_og.png'
+        'https://facebook.github.io/react/img/logo_og.png',
+        0
     ),
     new PlaylistItem(
         'Mildred Bailey – “All Of Me”',
         'https://ia800304.us.archive.org/34/items/PaulWhitemanwithMildredBailey/PaulWhitemanwithMildredBailey-AllofMe.mp3',
-        'https://facebook.github.io/react/img/logo_og.png'
+        'https://facebook.github.io/react/img/logo_og.png',
+        1
     ),
     new PlaylistItem(
         'Podington Bear - “Rubber Robot”',
         'https://s3.amazonaws.com/exp-us-standard/audio/playlist-example/Podington_Bear_-_Rubber_Robot.mp3',
-        'https://facebook.github.io/react/img/logo_og.png'
+        'https://facebook.github.io/react/img/logo_og.png',
+        2
     )
 ];
 
 const pushNamesToArr = () => {
     const arr = [];
-    TRACKS.forEach(item => arr.push({ name: item.name, uri: item.uri, image: item.image }));
+    TRACKS.forEach((item, index) => arr.push({ name: item.name, uri: item.uri, image: item.image, id: index }));
     return arr;
 }
 
-
-
-export let CURRENTTRACK = new PlaylistItem('item.name', 'item.uri', 'item.image');
+export let id = null;
 
 const PlayList = () => {
     return (
         <View style={styles.container}>
             <View>
+                
                 <FlatList
                     data={pushNamesToArr()}
                     renderItem={({ item }) => <Text
                         onPress={() => {
-
-                            CURRENTTRACK = new PlaylistItem(item.name, item.uri, item.image)
+                         
+                            id = item.id
                             return Actions.player();
                         }}
                         style={styles.trackItem}

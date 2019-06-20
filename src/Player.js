@@ -9,22 +9,12 @@ import {
 	InteractionManager
 } from 'react-native';
 import Slider from 'react-native-slider';
-import { Asset, Font } from 'expo';
-import {Audio} from 'expo-av';
+import { Audio } from 'expo-av';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Actions } from 'react-native-router-flux'
-import { CURRENTTRACK } from './PlayList';
-import { YellowBox } from 'react-native';
+import { TRACKS, id } from './PlayList';
+import { YellowBox, } from 'react-native';
+import { Actions } from 'react-native-router-flux';
 YellowBox.ignoreWarnings(['Remote debugger']);
-
-class PlaylistItem {
-	constructor(name, uri, image) {
-		this.name = name;
-		this.uri = uri;
-		this.image = image;
-	}
-}
-
 
 const { width: DEVICE_WIDTH, height: DEVICE_HEIGHT } = Dimensions.get('window');
 const BACKGROUND_COLOR = '#FFFFFF';
@@ -37,7 +27,7 @@ const RATE_SCALE = 3.0;
 export default class App extends Component {
 	constructor(props) {
 		super(props);
-		this.index = 0;
+		this.index = id;
 		this.isSeeking = false;
 		this.shouldPlayAtEndOfSeek = false;
 		this.playbackInstance = null;
@@ -58,7 +48,6 @@ export default class App extends Component {
 	}
 
 	componentDidMount() {
-		
 		Audio.setAudioModeAsync({
 			allowsRecordingIOS: false,
 			interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
@@ -72,9 +61,19 @@ export default class App extends Component {
 			this.setState({ fontLoaded: true });
 		})();
 
-		this._loadNewPlaybackInstance(false);
-
 		
+
+		this._loadNewPlaybackInstance(false);
+		InteractionManager.runAfterInteractions(() => {
+			Actions.refresh({
+				onBack: () => {
+					this.playbackInstance.pauseAsync();
+					
+					Actions.pop();
+				}
+			})
+		})
+
 	}
 
 	async _loadNewPlaybackInstance(playing) {
@@ -84,7 +83,7 @@ export default class App extends Component {
 			this.playbackInstance = null;
 		}
 
-		const source = { uri: CURRENTTRACK.uri };
+		const source = { uri: TRACKS[this.index].uri };
 		const initialStatus = {
 			shouldPlay: playing,
 			rate: this.state.rate,
@@ -112,8 +111,8 @@ export default class App extends Component {
 			});
 		} else {
 			this.setState({
-				playbackInstanceName: CURRENTTRACK.name,
-				portrait: CURRENTTRACK.image,
+				playbackInstanceName: TRACKS[this.index].name,
+				portrait: TRACKS[this.index].image,
 				isLoading: false,
 			});
 		}
@@ -143,8 +142,8 @@ export default class App extends Component {
 
 	_advanceIndex(forward) {
 		this.index =
-			(this.index + (forward ? 1 : CURRENTTRACK.length - 1)) %
-			CURRENTTRACK.length;
+			(this.index + (forward ? 1 : TRACKS.length - 1)) %
+			TRACKS.length;
 	}
 
 	async _updatePlaybackInstanceForIndex(playing) {
